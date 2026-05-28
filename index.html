@@ -264,13 +264,23 @@
     }
     .vstat .vnum { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--green); }
     .vstat .vlbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .venue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+    .venue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
     .venue-card {
       background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px;
-      box-shadow: var(--shadow); transition: transform .15s;
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s;
     }
-    .venue-card:hover { transform: translateY(-2px); }
+    .venue-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .venue-thumb {
+      width: 100%; height: 140px; object-fit: cover; display: block;
+      background: #e8ede5;
+    }
+    .venue-thumb-placeholder {
+      width: 100%; height: 140px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e8ede5, #d4ddd0);
+      font-size: 36px; color: var(--text-muted);
+    }
+    .venue-body { padding: 12px 14px; }
     .venue-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .venue-card .vcity { font-size: 12px; color: var(--text-muted); margin-bottom: 7px; }
     .venue-card .vgames { font-size: 12px; color: var(--text-muted); }
@@ -523,22 +533,38 @@ const PREDICT_MATCHES = [
 ];
 
 const VENUES = [
-  {name:'MetLife Stadium',city:'New York/New Jersey',c:'usa',games:8,note:'World Cup Final — Jul 19'},
-  {name:'AT&T Stadium',city:'Dallas',c:'usa',games:9,note:'Most matches · England vs Croatia'},
-  {name:'Mercedes-Benz Stadium',city:'Atlanta',c:'usa',games:9,note:'Semifinal venue'},
-  {name:'SoFi Stadium',city:'Los Angeles',c:'usa',games:8,note:''},
-  {name:'Gillette Stadium',city:'Boston',c:'usa',games:6,note:'England vs Ghana'},
-  {name:'Arrowhead Stadium',city:'Kansas City',c:'usa',games:6,note:''},
-  {name:'Lumen Field',city:'Seattle',c:'usa',games:6,note:''},
-  {name:'Hard Rock Stadium',city:'Miami',c:'usa',games:6,note:''},
-  {name:'Lincoln Financial Field',city:'Philadelphia',c:'usa',games:6,note:''},
-  {name:"Levi's Stadium",city:'San Francisco Bay Area',c:'usa',games:6,note:''},
-  {name:'NRG Stadium',city:'Houston',c:'usa',games:6,note:''},
-  {name:'Estadio Azteca',city:'Mexico City',c:'mex',games:5,note:'Opening match — Jun 11'},
-  {name:'Estadio Akron',city:'Guadalajara',c:'mex',games:4,note:''},
-  {name:'Estadio BBVA',city:'Monterrey',c:'mex',games:4,note:''},
-  {name:'BMO Field',city:'Toronto',c:'can',games:5,note:''},
-  {name:'BC Place',city:'Vancouver',c:'can',games:5,note:''},
+  {name:'MetLife Stadium',city:'New York/New Jersey',c:'usa',games:8,note:'World Cup Final — Jul 19',
+   img:'https://url.uk.m.mimecastprotect.com/s/VYseCGo8iB1DRM3CKf4UBhlGo'},
+  {name:'AT&T Stadium',city:'Dallas',c:'usa',games:9,note:'Most matches · England vs Croatia',
+   img:'https://url.uk.m.mimecastprotect.com/s/Kmj2CJrQCBq6vY9CGhoUyHbN6'},
+  {name:'Mercedes-Benz Stadium',city:'Atlanta',c:'usa',games:9,note:'Semifinal venue',
+   img:'https://url.uk.m.mimecastprotect.com/s/rkgNCKvQiD2XNn7h3i4U5Hlrk'},
+  {name:'SoFi Stadium',city:'Los Angeles',c:'usa',games:8,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/K1X3CLwJHkRGr1BCmskUy5lF-'},
+  {name:'Gillette Stadium',city:'Boston',c:'usa',games:6,note:'England vs Ghana',
+   img:'https://url.uk.m.mimecastprotect.com/s/ct30CMx1f2qw1ZBHQt8U8NMoK'},
+  {name:'Arrowhead Stadium',city:'Kansas City',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/AMi0CNy0CZ0O8BkT0uzUyKq7x'},
+  {name:'Lumen Field',city:'Seattle',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/TZhyCOz8HNp7jK1IACrUGCBTv'},
+  {name:'Hard Rock Stadium',city:'Miami',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/QbWNCPAQc0KjRxztZFgUxeCQv'},
+  {name:'Lincoln Financial Field',city:'Philadelphia',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/C0_-CQB7HXk2pWvuGHOUGyV5T'},
+  {name:"Levi's Stadium",city:'San Francisco Bay Area',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/Cg77CRD1HGvM1L4UWIGU1xlYz7s_Stadium.jpg'},
+  {name:'NRG Stadium',city:'Houston',c:'usa',games:6,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/_JLRCVKQc2xW6AqHxSBUEv4T6'},
+  {name:'Estadio Azteca',city:'Mexico City',c:'mex',games:5,note:'Opening match — Jun 11',
+   img:'https://url.uk.m.mimecastprotect.com/s/PswoCWXqC65MKBrtzTYUoCGGh'},
+  {name:'Estadio Akron',city:'Guadalajara',c:'mex',games:4,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/FqCnCX25S4X8RYEhLUDUWqG_J'},
+  {name:'Estadio BBVA',city:'Monterrey',c:'mex',games:4,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/alSMCYN5SDLnqxVhxcRUxfB7j'},
+  {name:'BMO Field',city:'Toronto',c:'can',games:5,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/F5NkCZN0S75kLNKtQfgUB9oFN'},
+  {name:'BC Place',city:'Vancouver',c:'can',games:5,note:'',
+   img:'https://url.uk.m.mimecastprotect.com/s/lkHeC1P4f6MPoYJtnhMUVwlge'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -570,7 +596,7 @@ async function loadResults() {
 async function fetchResultsFromAI() {
   const ids = ALL_FIXTURES.map(f=>f.id).join(',');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://url.uk.m.mimecastprotect.com/s/oYwgC2QWiVpBXw5C5ijU5OyyF', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
@@ -691,11 +717,18 @@ function buildFixtures(filter) {
 function buildVenues() {
   document.getElementById('venues-container').innerHTML = VENUES.map(v => `
     <div class="venue-card">
-      <span class="ctag ctag-${v.c}">${v.c==='usa'?'🇺🇸 USA':v.c==='mex'?'🇲🇽 Mexico':'🇨🇦 Canada'}</span>
-      <h3>${v.name}</h3>
-      <div class="vcity">${v.city}</div>
-      <div class="vgames">⚽ ${v.games} matches</div>
-      ${v.note ? `<div class="vnote">${v.note}</div>` : ''}
+      ${v.img
+        ? `<img class="venue-thumb" src="${v.img}" alt="${v.name}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="venue-thumb-placeholder" style="${v.img?'display:none':''}">🏟️</div>
+      <div class="venue-body">
+        <span class="ctag ctag-${v.c}">${v.c==='usa'?'🇺🇸 USA':v.c==='mex'?'🇲🇽 Mexico':'🇨🇦 Canada'}</span>
+        <h3>${v.name}</h3>
+        <div class="vcity">${v.city}</div>
+        <div class="vgames">⚽ ${v.games} matches</div>
+        ${v.note ? `<div class="vnote">${v.note}</div>` : ''}
+      </div>
     </div>`).join('');
 }
 
@@ -758,7 +791,7 @@ function analysePredictions() {
   const query = encodeURIComponent(
     `I've made these World Cup 2026 predictions: ${lines.join(', ')}. Based on these, analyse my picks, tell me how realistic they are, how far England might go, and who you think will win the tournament.`
   );
-  window.open(`https://claude.ai/new?q=${query}`, '_blank');
+  window.open(`https://url.uk.m.mimecastprotect.com/s/PRCRC3PwfXpylQDuosyUQRDp0`, '_blank');
 }
 
 // ── TAB NAVIGATION ────────────────────────────────────────────────────────────
