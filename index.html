@@ -367,11 +367,41 @@
       margin-top: 3rem;
     }
 
+    /* ── MOBILE BOTTOM NAV ── */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--green);
+      border-top: 2px solid rgba(255,255,255,0.15);
+      padding: 0 0 env(safe-area-inset-bottom, 0);
+    }
+    .bottom-nav-inner { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .bnav-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; padding: 10px 4px 8px;
+      border: none; background: none; color: rgba(255,255,255,0.6);
+      cursor: pointer; font-family: var(--font-display);
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    }
+    .bnav-btn .bicon { font-size: 20px; line-height: 1; }
+    .bnav-btn.active { color: var(--gold); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .hero-inner { grid-template-columns: 1fr; }
       .hero-stats { flex-direction: row; }
       .header-nav { display: none; }
+      .bottom-nav { display: block; }
+      main { padding: 1rem 1rem calc(72px + env(safe-area-inset-bottom, 8px)); }
+      .predict-layout { grid-template-columns: 1fr; }
+      .venue-grid { grid-template-columns: repeat(2, 1fr); }
+      .venue-thumb { height: 100px; }
+      .groups-grid { grid-template-columns: repeat(2, 1fr); }
+      .eng-matches { display: none; }
+      .hero { padding: 1.5rem 1rem; }
+      .hero-title { font-size: 32px; }
+      .countdown-inner { gap: 0.75rem; }
+      .cd-num { font-size: 20px; }
     }
   </style>
 </head>
@@ -384,10 +414,10 @@
       <h1>World Cup <span>2026</span></h1>
     </div>
     <nav class="header-nav" role="navigation" aria-label="Main navigation">
-      <button class="nav-btn active" onclick="showTab('groups',this)">Groups</button>
-      <button class="nav-btn" onclick="showTab('fixtures',this)">Fixtures</button>
-      <button class="nav-btn" onclick="showTab('venues',this)">Venues</button>
-      <button class="nav-btn" onclick="showTab('predict',this)">Predict</button>
+      <button class="nav-btn active" onclick="showTab('groups',this)" data-tab="groups">Groups</button>
+      <button class="nav-btn" onclick="showTab('fixtures',this)" data-tab="fixtures">Fixtures</button>
+      <button class="nav-btn" onclick="showTab('venues',this)" data-tab="venues">Venues</button>
+      <button class="nav-btn" onclick="showTab('predict',this)" data-tab="predict">Predict</button>
     </nav>
   </div>
 </header>
@@ -479,6 +509,16 @@
   <p>FIFA World Cup 2026 · USA, Canada & Mexico · Built with ❤️ for England fans</p>
 </footer>
 
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <button class="bnav-btn active" onclick="showTab('groups',this)" data-tab="groups"><span class="bicon">⚽</span>Groups</button>
+    <button class="bnav-btn" onclick="showTab('fixtures',this)" data-tab="fixtures"><span class="bicon">📅</span>Fixtures</button>
+    <button class="bnav-btn" onclick="showTab('venues',this)" data-tab="venues"><span class="bicon">🏟️</span>Venues</button>
+    <button class="bnav-btn" onclick="showTab('predict',this)" data-tab="predict"><span class="bicon">🏆</span>Predict</button>
+  </div>
+</nav>
+
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const GROUPS = {
@@ -534,37 +574,37 @@ const PREDICT_MATCHES = [
 
 const VENUES = [
   {name:'MetLife Stadium',city:'New York/New Jersey',c:'usa',games:8,note:'World Cup Final — Jul 19',
-   img:'https://url.uk.m.mimecastprotect.com/s/VYseCGo8iB1DRM3CKf4UBhlGo'},
+   img:'https://url.uk.m.mimecastprotect.com/s/FJuECDl8ioBK6OgsWfrUjptGy'},
   {name:'AT&T Stadium',city:'Dallas',c:'usa',games:9,note:'Most matches · England vs Croatia',
-   img:'https://url.uk.m.mimecastprotect.com/s/Kmj2CJrQCBq6vY9CGhoUyHbN6'},
+   img:'https://url.uk.m.mimecastprotect.com/s/cht9CEmxtlWJA6RUwhxU78BFV'},
   {name:'Mercedes-Benz Stadium',city:'Atlanta',c:'usa',games:9,note:'Semifinal venue',
-   img:'https://url.uk.m.mimecastprotect.com/s/rkgNCKvQiD2XNn7h3i4U5Hlrk'},
+   img:'https://url.uk.m.mimecastprotect.com/s/x46lCGo8iBJpyLjFpi4UBm3U_'},
   {name:'SoFi Stadium',city:'Los Angeles',c:'usa',games:8,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/K1X3CLwJHkRGr1BCmskUy5lF-'},
+   img:'https://url.uk.m.mimecastprotect.com/s/DjB4CJrQCB8m4Q0FLsoUyA8r9'},
   {name:'Gillette Stadium',city:'Boston',c:'usa',games:6,note:'England vs Ghana',
-   img:'https://url.uk.m.mimecastprotect.com/s/ct30CMx1f2qw1ZBHQt8U8NMoK'},
+   img:'https://url.uk.m.mimecastprotect.com/s/uuEMCKvQiDqvAr3Spt4U5DUAr'},
   {name:'Arrowhead Stadium',city:'Kansas City',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/AMi0CNy0CZ0O8BkT0uzUyKq7x'},
+   img:'https://url.uk.m.mimecastprotect.com/s/nE9OCLwJHkPpoYEIgukUy3Hv-'},
   {name:'Lumen Field',city:'Seattle',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/TZhyCOz8HNp7jK1IACrUGCBTv'},
+   img:'https://url.uk.m.mimecastprotect.com/s/l4NkCMx1f250o6EcGC8U8DkfU'},
   {name:'Hard Rock Stadium',city:'Miami',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/QbWNCPAQc0KjRxztZFgUxeCQv'},
+   img:'https://url.uk.m.mimecastprotect.com/s/3gvjCNy0CZNrnMvsVFzUyuXbR'},
   {name:'Lincoln Financial Field',city:'Philadelphia',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/C0_-CQB7HXk2pWvuGHOUGyV5T'},
+   img:'https://url.uk.m.mimecastprotect.com/s/p00rCOz8HNA9P2qTWHrUGkRq1'},
   {name:"Levi's Stadium",city:'San Francisco Bay Area',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/Cg77CRD1HGvM1L4UWIGU1xlYz7s_Stadium.jpg'},
+   img:'https://url.uk.m.mimecastprotect.com/s/pRJQCPAQc04rD5ysWIgUx9CRg7s_Stadium.jpg?width=400'},
   {name:'NRG Stadium',city:'Houston',c:'usa',games:6,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/_JLRCVKQc2xW6AqHxSBUEv4T6'},
+   img:'https://url.uk.m.mimecastprotect.com/s/N2poCQB7HX6EDNzivSOUGJyWF'},
   {name:'Estadio Azteca',city:'Mexico City',c:'mex',games:5,note:'Opening match — Jun 11',
-   img:'https://url.uk.m.mimecastprotect.com/s/PswoCWXqC65MKBrtzTYUoCGGh'},
+   img:'https://url.uk.m.mimecastprotect.com/s/aVuXCRD1HGrkKg7IvTGU1O_ZL'},
   {name:'Estadio Akron',city:'Guadalajara',c:'mex',games:4,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/FqCnCX25S4X8RYEhLUDUWqG_J'},
+   img:'https://url.uk.m.mimecastprotect.com/s/zYMCCVKQc2lL4POcgUBUErGCs'},
   {name:'Estadio BBVA',city:'Monterrey',c:'mex',games:4,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/alSMCYN5SDLnqxVhxcRUxfB7j'},
+   img:'https://url.uk.m.mimecastprotect.com/s/r4WlCWXqC6jgpyltycYUoJgVH'},
   {name:'BMO Field',city:'Toronto',c:'can',games:5,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/F5NkCZN0S75kLNKtQfgUB9oFN'},
+   img:'https://url.uk.m.mimecastprotect.com/s/HhkGCX25S4ny6MphWfDUWWYCn'},
   {name:'BC Place',city:'Vancouver',c:'can',games:5,note:'',
-   img:'https://url.uk.m.mimecastprotect.com/s/lkHeC1P4f6MPoYJtnhMUVwlge'},
+   img:'https://url.uk.m.mimecastprotect.com/s/u33TCYN5SD3J06GSKhRUxyVzh'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -596,7 +636,7 @@ async function loadResults() {
 async function fetchResultsFromAI() {
   const ids = ALL_FIXTURES.map(f=>f.id).join(',');
   try {
-    const res = await fetch('https://url.uk.m.mimecastprotect.com/s/oYwgC2QWiVpBXw5C5ijU5OyyF', {
+    const res = await fetch('https://url.uk.m.mimecastprotect.com/s/yIT8CZN0S7MVmoOs3igUBMwI-', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
@@ -791,15 +831,18 @@ function analysePredictions() {
   const query = encodeURIComponent(
     `I've made these World Cup 2026 predictions: ${lines.join(', ')}. Based on these, analyse my picks, tell me how realistic they are, how far England might go, and who you think will win the tournament.`
   );
-  window.open(`https://url.uk.m.mimecastprotect.com/s/PRCRC3PwfXpylQDuosyUQRDp0`, '_blank');
+  window.open(`https://url.uk.m.mimecastprotect.com/s/zIp0C1P4f6pDjEvtVsMUVlUKW`, '_blank');
 }
 
 // ── TAB NAVIGATION ────────────────────────────────────────────────────────────
 function showTab(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn, .bnav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  el.classList.add('active');
+  // Activate both header and bottom nav buttons for this tab
+  document.querySelectorAll('.nav-btn, .bnav-btn').forEach(b => {
+    if (b.getAttribute('data-tab') === name || b === el) b.classList.add('active');
+  });
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
