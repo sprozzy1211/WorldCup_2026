@@ -573,22 +573,22 @@ const PREDICT_MATCHES = [
 ];
 
 const VENUES = [
-  {name:'MetLife Stadium',city:'New York/New Jersey',c:'usa',games:8,note:'World Cup Final — Jul 19',wiki:'MetLife_Stadium'},
-  {name:'AT&T Stadium',city:'Dallas',c:'usa',games:9,note:'Most matches · England vs Croatia',wiki:'AT%26T_Stadium'},
-  {name:'Mercedes-Benz Stadium',city:'Atlanta',c:'usa',games:9,note:'Semifinal venue',wiki:'Mercedes-Benz_Stadium'},
-  {name:'SoFi Stadium',city:'Los Angeles',c:'usa',games:8,note:'',wiki:'SoFi_Stadium'},
-  {name:'Gillette Stadium',city:'Boston',c:'usa',games:6,note:'England vs Ghana',wiki:'Gillette_Stadium'},
-  {name:'Arrowhead Stadium',city:'Kansas City',c:'usa',games:6,note:'',wiki:'Arrowhead_Stadium'},
-  {name:'Lumen Field',city:'Seattle',c:'usa',games:6,note:'',wiki:'Lumen_Field'},
-  {name:'Hard Rock Stadium',city:'Miami',c:'usa',games:6,note:'',wiki:'Hard_Rock_Stadium'},
-  {name:'Lincoln Financial Field',city:'Philadelphia',c:'usa',games:6,note:'',wiki:'Lincoln_Financial_Field'},
-  {name:"Levi's Stadium",city:'San Francisco Bay Area',c:'usa',games:6,note:'',wiki:"Levi's_Stadium"},
-  {name:'NRG Stadium',city:'Houston',c:'usa',games:6,note:'',wiki:'NRG_Stadium'},
-  {name:'Estadio Azteca',city:'Mexico City',c:'mex',games:5,note:'Opening match — Jun 11',wiki:'Estadio_Azteca'},
-  {name:'Estadio Akron',city:'Guadalajara',c:'mex',games:4,note:'',wiki:'Estadio_Akron'},
-  {name:'Estadio BBVA',city:'Monterrey',c:'mex',games:4,note:'',wiki:'Estadio_BBVA'},
-  {name:'BMO Field',city:'Toronto',c:'can',games:5,note:'',wiki:'BMO_Field'},
-  {name:'BC Place',city:'Vancouver',c:'can',games:5,note:'',wiki:'BC_Place'},
+  {name:'MetLife Stadium',city:'New York/New Jersey',c:'usa',games:8,note:'World Cup Final — Jul 19',wiki:'MetLife Stadium'},
+  {name:'AT&T Stadium',city:'Dallas',c:'usa',games:9,note:'Most matches · England vs Croatia',wiki:'AT&T Stadium'},
+  {name:'Mercedes-Benz Stadium',city:'Atlanta',c:'usa',games:9,note:'Semifinal venue',wiki:'Mercedes-Benz Stadium'},
+  {name:'SoFi Stadium',city:'Los Angeles',c:'usa',games:8,note:'',wiki:'SoFi Stadium'},
+  {name:'Gillette Stadium',city:'Boston',c:'usa',games:6,note:'England vs Ghana',wiki:'Gillette Stadium'},
+  {name:'Arrowhead Stadium',city:'Kansas City',c:'usa',games:6,note:'',wiki:'Arrowhead Stadium'},
+  {name:'Lumen Field',city:'Seattle',c:'usa',games:6,note:'',wiki:'Lumen Field'},
+  {name:'Hard Rock Stadium',city:'Miami',c:'usa',games:6,note:'',wiki:'Hard Rock Stadium'},
+  {name:'Lincoln Financial Field',city:'Philadelphia',c:'usa',games:6,note:'',wiki:'Lincoln Financial Field'},
+  {name:"Levi's Stadium",city:'San Francisco Bay Area',c:'usa',games:6,note:'',wiki:"Levi's Stadium"},
+  {name:'NRG Stadium',city:'Houston',c:'usa',games:6,note:'',wiki:'NRG Stadium'},
+  {name:'Estadio Azteca',city:'Mexico City',c:'mex',games:5,note:'Opening match — Jun 11',wiki:'Estadio Azteca'},
+  {name:'Estadio Akron',city:'Guadalajara',c:'mex',games:4,note:'',wiki:'Estadio Akron'},
+  {name:'Estadio BBVA',city:'Monterrey',c:'mex',games:4,note:'',wiki:'Estadio BBVA'},
+  {name:'BMO Field',city:'Toronto',c:'can',games:5,note:'',wiki:'BMO Field'},
+  {name:'BC Place',city:'Vancouver',c:'can',games:5,note:'',wiki:'BC Place'},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -620,7 +620,7 @@ async function loadResults() {
 async function fetchResultsFromAI() {
   const ids = ALL_FIXTURES.map(f=>f.id).join(',');
   try {
-    const res = await fetch('https://url.uk.m.mimecastprotect.com/s/ZcD9CPAQc0443xAFzfgUxIaUJ', {
+    const res = await fetch('https://url.uk.m.mimecastprotect.com/s/7TtXCvrZCEWWrzliQfoUQQbRp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
@@ -738,65 +738,55 @@ function buildFixtures(filter) {
 }
 
 // ── VENUES ────────────────────────────────────────────────────────────────────
-const venueImgCache = {};
 
-function buildVenueCard(v, img) {
-  const imgHtml = img
-    ? `<img class="venue-thumb" src="${img}" alt="${v.name}" loading="lazy"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
-    : '';
-  return `<div class="venue-card" id="vcard-${v.wiki.replace(/[^a-zA-Z0-9]/g,'_')}">
-    ${imgHtml}
-    <div class="venue-thumb-placeholder" style="${img ? 'display:none' : ''}">🏟️</div>
-    <div class="venue-body">
-      <span class="ctag ctag-${v.c}">${v.c==='usa'?'🇺🇸 USA':v.c==='mex'?'🇲🇽 Mexico':'🇨🇦 Canada'}</span>
-      <h3>${v.name}</h3>
-      <div class="vcity">${v.city}</div>
-      <div class="vgames">⚽ ${v.games} matches</div>
-      ${v.note ? `<div class="vnote">${v.note}</div>` : ''}
-    </div>
-  </div>`;
-}
-
-async function fetchVenueImage(wiki) {
-  if (venueImgCache[wiki] !== undefined) return venueImgCache[wiki];
+// Fetch venue thumbnails in batches from Wikipedia Pageimages API (CORS-enabled public API)
+async function fetchVenueThumbnails() {
+  const titles = VENUES.map(v => encodeURIComponent(v.wiki)).join('|');
+  const url = `https://url.uk.m.mimecastprotect.com/s/HFzNCwvrivLLg3NIqhVUJlJYG`;
   try {
-    const url = `https://url.uk.m.mimecastprotect.com/s/0aDtCQB7HX66oW4TPhOUGCXzk`;
     const res = await fetch(url);
-    if (!res.ok) { venueImgCache[wiki] = null; return null; }
     const data = await res.json();
-    const img = data.thumbnail ? data.thumbnail.source : null;
-    venueImgCache[wiki] = img;
-    return img;
-  } catch(e) {
-    venueImgCache[wiki] = null;
-    return null;
-  }
+    const pages = data.query.pages;
+    const imgMap = {};
+    Object.values(pages).forEach(p => {
+      if (p.thumbnail) imgMap[p.title] = p.thumbnail.source;
+    });
+    return imgMap;
+  } catch(e) { return {}; }
 }
 
 async function buildVenues() {
   const container = document.getElementById('venues-container');
-  // First pass: render all cards immediately with placeholders
-  container.innerHTML = VENUES.map(v => buildVenueCard(v, null)).join('');
-  // Second pass: fetch images and update each card
-  await Promise.all(VENUES.map(async (v) => {
-    const img = await fetchVenueImage(v.wiki);
-    if (img) {
-      const id = 'vcard-' + v.wiki.replace(/[^a-zA-Z0-9]/g,'_');
-      const card = document.getElementById(id);
-      if (card) {
-        const placeholder = card.querySelector('.venue-thumb-placeholder');
-        const imgEl = document.createElement('img');
-        imgEl.className = 'venue-thumb';
-        imgEl.src = img;
-        imgEl.alt = v.name;
-        imgEl.loading = 'lazy';
-        imgEl.onerror = function() { this.style.display='none'; placeholder.style.display='flex'; };
-        card.insertBefore(imgEl, placeholder);
-        placeholder.style.display = 'none';
-      }
-    }
-  }));
+  // Render placeholders immediately
+  container.innerHTML = VENUES.map(v => `
+    <div class="venue-card" id="vc-${v.wiki.replace(/[^a-z0-9]/gi,'_')}">
+      <div class="venue-thumb-placeholder">🏟️</div>
+      <div class="venue-body">
+        <span class="ctag ctag-${v.c}">${v.c==='usa'?'🇺🇸 USA':v.c==='mex'?'🇲🇽 Mexico':'🇨🇦 Canada'}</span>
+        <h3>${v.name}</h3>
+        <div class="vcity">${v.city}</div>
+        <div class="vgames">⚽ ${v.games} matches</div>
+        ${v.note ? `<div class="vnote">${v.note}</div>` : ''}
+      </div>
+    </div>`).join('');
+  // Fetch all thumbnails in one API call
+  const imgMap = await fetchVenueThumbnails();
+  VENUES.forEach(v => {
+    const img = imgMap[v.wiki];
+    if (!img) return;
+    const id = 'vc-' + v.wiki.replace(/[^a-z0-9]/gi,'_');
+    const card = document.getElementById(id);
+    if (!card) return;
+    const placeholder = card.querySelector('.venue-thumb-placeholder');
+    const imgEl = document.createElement('img');
+    imgEl.className = 'venue-thumb';
+    imgEl.src = img;
+    imgEl.alt = v.name;
+    imgEl.loading = 'lazy';
+    imgEl.onerror = () => { imgEl.remove(); placeholder.style.display = 'flex'; };
+    card.insertBefore(imgEl, placeholder);
+    placeholder.style.display = 'none';
+  });
 }
 
 // ── PREDICT ───────────────────────────────────────────────────────────────────
@@ -858,7 +848,7 @@ function analysePredictions() {
   const query = encodeURIComponent(
     `I've made these World Cup 2026 predictions: ${lines.join(', ')}. Based on these, analyse my picks, tell me how realistic they are, how far England might go, and who you think will win the tournament.`
   );
-  window.open(`https://url.uk.m.mimecastprotect.com/s/nEmzCRD1HGrr5LPFPiGU1S7oX`, '_blank');
+  window.open(`https://url.uk.m.mimecastprotect.com/s/p1k4Cxw1HLJJPoXiYiVUy4vMY`, '_blank');
 }
 
 // ── TAB NAVIGATION ────────────────────────────────────────────────────────────
@@ -879,7 +869,7 @@ async function init() {
   buildGroups();
   buildEngBanner();
   buildFixtureFilters();
-  buildVenues(); // async - images load progressively
+  buildVenues(); // images load async
   buildPredict();
   updateCountdown();
   setInterval(updateCountdown, 1000);
